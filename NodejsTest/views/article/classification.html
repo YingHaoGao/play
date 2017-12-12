@@ -1,0 +1,39 @@
+<%-include ../include/header.html%>
+<div class="alert alert-success Gao-alert" role="alert">
+	共有&nbsp;&nbsp;<%=content.length%>&nbsp;&nbsp;条消息
+</div>
+<%content.map(function(obj, index){%>
+<div class="panel Gao-panel classification">
+	<!-- Default panel contents -->
+	<div class="panel-heading"></div>
+	<div class="panel-body classification"  index="<%=obj.id%>"
+	     data-other="<%=obj.other%>">
+		<h4 class="title">
+			<span><%=obj.title%></span>
+		</h4>
+		<p class="Gao-content_text"><%=obj.content%></p>
+		<%if(typeof obj.img=='object' && obj.img.length>0){%>
+		<%obj.img.forEach(function(val, index){%>
+		<div class="Gao-content_img classification">
+			<img src=<%=val%> alt="图片<%=index%>">
+		</div>
+		<%})%>
+		<%}%>
+		<p class="content">
+			发布者:<%=obj.other%>&nbsp;&nbsp;&nbsp;&nbsp;
+			发布时间：<%=obj.date%>
+		</p>
+	</div>
+
+	<!-- List group -->
+	<ul class="list-group">
+		<li class="list-group-item">
+			<span class="list_btn like">赞(0)</span>
+			<span class="list_btn comment">评论(0)</span>
+			<span class="list_btn share">分享(0)</span>
+			<span class="list_btn share Gao-panel-label"><%=obj.category%></span>
+		</li>
+	</ul>
+</div>
+<%})%>
+<%-include ../include/footer.html%>

@@ -1,0 +1,47 @@
+<%-include ../include/header.html%>
+<%content.map(function(obj, index){%>
+<div class="panel Gao-panel">
+	<!-- Default panel contents -->
+	<div class="panel-heading"></div>
+	<div class="panel-body" index="<%=obj.id%>">
+		<h4 class="title">
+			<span><%=obj.title%></span>
+		</h4>
+		<p><%=obj.content%></p>
+		<%if(typeof obj.img=='object' && obj.img.length>0){%>
+		<%obj.img.forEach(function(val, index){%>
+		<div class="Gao-content_img" style="width: 300px;height:300px;">
+			<img src=<%=val%> alt="图片<%=index%>">
+		</div>
+		<%})%>
+		<%}%>
+		<p class="content">
+			发布者:<%=obj.other%>&nbsp;&nbsp;&nbsp;&nbsp;
+			发布时间：<%=obj.date%>
+		</p>
+	</div>
+
+	<!-- List group -->
+	<ul class="list-group">
+		<li class="list-group-item">
+			<span class="list_btn like">赞(0)</span>
+			<span class="list_btn comment list_btn_action">评论(0)</span>
+			<span class="list_btn share">分享(0)</span>
+			<span class="list_btn share Gao-panel-label"><%=obj.category%></span>
+			<%if(msg=="ok"){%>
+			<span class="btn btn-danger Gao-delete-btn">删除</span>
+			<%}%>
+		</li>
+		<li class="list-group-item">
+			<%if(obj.comment=='' || obj.comment==undefined){%>
+			<p class="noComment">暂无评论</p>
+			<%}else{%>
+			<ul>
+
+			</ul>
+			<%}%>
+		</li>
+	</ul>
+</div>
+<%})%>
+<%-include ../include/footer.html%>

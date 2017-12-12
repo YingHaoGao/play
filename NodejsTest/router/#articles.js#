@@ -1,0 +1,136 @@
+ express=require('express');
+var MongoClient=require('mongodb').MongoClient;
+var DB_CONN_STR = 'mongodb://localhost:27017/mutong';
+var route=express.Router();
+
+var user;
+
+route.get('/all',function(req,res){
+	MongoClient.connect(DB_CONN_STR, function(err, db) {
+		console.log("连接成功！");
+		if(req.session.user==undefined){user=""}else{
+			user=req.session.user.username;
+		};
+		selectData({username:user}, db, function(result) {
+			var content;
+			if(result==[]){content=[]}else{content=result[0].articles};
+			res.render('article/classification',{
+				classification:"全部",
+				content:content,user:user
+			});
+			db.close();
+		});
+	});
+});
+
+route.get('/comical',function(req,res){
+	MongoClient.connect(DB_CONN_STR, function(err, db) {
+		console.log("连接成功！");
+		if(req.session.user==undefined){user=""}else{
+			user=req.session.user.username;
+		};
+		selectData({username:user}, db, function(result) {
+			var content=[];
+			if(result==[]){content=[]}else{
+			
+			};
+			res.render('article/classification',{classification:"搞笑",
+				content:content,user:user});
+			db.close();
+		});
+	});
+});
+
+route.get('/affection',function(req,res){
+	MongoClient.connect(DB_CONN_STR, function(err, db) {
+		console.log("连接成功！");
+		selectData({category:"感情"}, db, function(result) {
+			console.log(result);
+			var user;
+			if(req.session.user==undefined){user=""}else{user=req.session.user.username};
+			res.render('article/classification',{classification:"感情",
+				content:result,user:user});
+			db.close();
+		});
+	});
+});
+
+route.get('/fashion',function(req,res){
+	MongoClient.connect(DB_CONN_STR, function(err, db) {
+		console.log("连接成功！");
+		selectData({category:"时尚"}, db, function(result) {
+			console.log(result);
+			var user;
+			if(req.session.user==undefined){user=""}else{user=req.session.user.username};
+			res.render('article/classification',{classification:"时尚",
+				content:result,user:user});
+			db.close();
+		});
+	});
+});
+
+route.get('/entertainment',function(req,res){
+	MongoClient.connect(DB_CONN_STR, function(err, db) {
+		console.log("连接成功！");
+		selectData({category:"娱乐"}, db, function(result) {
+			console.log(result);
+			var user;
+			if(req.session.user==undefined){user=""}else{user=req.session.user.username};
+			res.render('article/classification',{classification:"娱乐",
+				content:result,user:user});
+			db.close();
+		});
+	});
+});
+
+route.get('/add',function(req,res){
+	res.render('article/addarticle',{classification:"全部",
+		user:req.session.user.username});
+});
+
+route.post('/add',function(req,res){
+	MongoClient.connect(DB_CONN_STR, function(err, db) {
+		console.log("连接成功！");
+		selectData({username:req.session.user.username},db,function(result){
+			var userInfor=result[0];
+			userInfor.articles.unshift(req.body);
+			var collection = db.collection('weibo');
+			console.log("body",typeof req.body);
+			console.log("result",userInfor);
+			collection.update({username:userInfor.username},userInfor);
+			res.send({isOk:"ok",text:"发表成功！"});
+		});
+	});
+});
+
+
+var insertData = function(data ,db, callback) {
+	//连接到表 site
+	var collection = db.collection('weibo');
+	//插入数据
+	collection.insert(data, function(err, result) {
+		if(err)
+		{
+			console.log('Error:'+ err);
+			return;
+		}
+		callback(result);
+	});
+};
+
+var selectData = function(whereStr, db, callback) {
+	//连接到表
+	var collection = db.collection('weibo');
+	//查询数据
+	collection.find(whereStr).toArray(function(err, result) {
+		if(err)
+		{
+			console.log('Error:'+ err);
+			return;
+		}
+		result.sort(function(a,b){return b.ms>a.ms;});
+		callback(result);
+	});
+}
+
+module.exports=route;
